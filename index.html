@@ -296,6 +296,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="hint">Shown in green on the agenda. Gmail, Keep and Photos open in this account.</div></div>
     <div class="field"><label>Weather town</label><input id="s-town" placeholder="Cranston, RI">
       <div class="hint">Town name, e.g. "Warwick" or "Providence". Looked up automatically.</div></div>
+    <div class="field"><label>Extra shared calendars (one per line: Name, Calendar ID)</label>
+      <textarea id="s-extra" rows="3" placeholder="Family, abc123xyz@group.calendar.google.com" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);font:13px/1.5 Inter,system-ui,sans-serif;resize:vertical;outline:none"></textarea>
+      <div class="hint">Find the ID in Google Calendar: Settings, click the calendar, then "Integrate calendar." Your school account must have access to it.</div></div>
     <div class="field"><label>Today list: Apps Script web app URL</label><input id="s-today" placeholder="https://script.google.com/macros/s/…/exec">
       <div class="hint">Shows today's events as a clean list. Leave blank to use the basic calendar view.</div></div>
     <div class="field"><label>Notes sync: GitHub token</label><input id="s-token" type="password" placeholder="ghp_…" autocomplete="off">
@@ -616,6 +619,8 @@ function agendaCals(){
   const cals = [];
   if(S.school)   cals.push({email:S.school,   color:'#3b6cf6', name:'School'});
   if(S.personal) cals.push({email:S.personal, color:'#10a37f', name:'Personal'});
+  const extraColors = ['#e8710a','#a142f4','#d93025','#0097a7','#c26401','#7cb342'];
+  (S.extraCals||[]).forEach((c,i)=>cals.push({email:c.id, color:extraColors[i%extraColors.length], name:c.name}));
   return cals;
 }
 function calEmbedUrl(cals, extra){
@@ -770,6 +775,7 @@ function openSettings(){
   document.getElementById('s-town').value = S.town||'';
   document.getElementById('s-token').value = S.token||'';
   document.getElementById('s-today').value = S.todayUrl||'';
+  document.getElementById('s-extra').value = (S.extraCals||[]).map(c=>`${c.name}, ${c.id}`).join('\n');
   document.getElementById('settings').classList.add('open');
 }
 function closeSettings(){ document.getElementById('settings').classList.remove('open'); }
@@ -787,6 +793,9 @@ async function saveSettings(){
     }catch(e){}
   }
   S.todayUrl = document.getElementById('s-today').value.trim();
+  S.extraCals = document.getElementById('s-extra').value.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const i = l.lastIndexOf(','); return i<0 ? {name:'Shared', id:l} : {name:l.slice(0,i).trim()||'Shared', id:l.slice(i+1).trim()};
+  }).filter(c=>c.id.includes('@'));
   const token = document.getElementById('s-token').value.trim();
   if(token !== (S.token||'')){ S.token = token; S.gistId = ''; remoteAt = null; dirty = !!ta.value; saveLocal(); }
   store.set('settings', S);
