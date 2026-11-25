@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5fa; --card:rgba(255,255,255,.78); --card-hi:rgba(15,23,42,.05);
+  --border:rgba(15,23,42,.08); --text:#0f172a; --muted:#5b6578; --dim:#8b94a7;
+  --accent:#3b6cf6; --school:#3b6cf6; --personal:#10a37f; --up:#059669; --down:#dc2626; --radius:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,Segoe UI,Roboto,sans-serif;color:var(--text);background:var(--bg);
+  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;
+  background:
+   radial-gradient(800px 500px at 5% 0%, rgba(59,108,246,.10), transparent 60%),
+   radial-gradient(700px 500px at 100% 10%, rgba(16,163,127,.08), transparent 60%),
+   radial-gradient(900px 600px at 50% 110%, rgba(168,85,247,.07), transparent 60%),
+   var(--bg);}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+.wrap{max-width:1600px;margin:0 auto;padding:16px 22px 28px}
+.glass{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  box-shadow:0 1px 2px rgba(15,23,42,.04),0 6px 24px rgba(15,23,42,.06)}
+
+/* ---------- Banner (compact) ---------- */
+.banner{display:grid;grid-template-columns:1.35fr 1.15fr .95fr;overflow:hidden;min-height:115px}
+.banner > div{padding:12px 22px;display:flex;align-items:center;min-width:0}
+.banner > div + div{border-left:1px solid var(--border)}
+.label{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:var(--dim);font-weight:600}
+
+.time-block{gap:16px}
+.clock{font-size:44px;font-weight:300;letter-spacing:-1.2px;line-height:1;white-space:nowrap}
+.clock small{font-size:15px;color:var(--muted);margin-left:4px;font-weight:500}
+.greet{font-size:14px;font-weight:600}
+.time-block > div:last-child{min-width:0;flex:1}
+.fact{display:flex;gap:6px;align-items:flex-start;margin-top:6px;font-size:12px;line-height:1.4;color:var(--muted)}
+.fact-txt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fact b{color:var(--accent);font-weight:600}
+.fact button{color:var(--dim);font-size:12px;padding:0 2px;flex:none}
+.fact button:hover{color:var(--accent)}
+.date{font-size:13px;color:var(--muted);margin-top:2px}
+
+.wx{gap:16px;justify-content:space-between;width:100%}
+.wx-now{display:flex;align-items:center;gap:10px;min-width:0}
+.wx-icon{font-size:30px;line-height:1}
+.wx-temp{font-size:30px;font-weight:300;letter-spacing:-.8px;line-height:1.1;margin-top:2px}
+.wx-now .label{white-space:nowrap}
+.wx-desc{color:var(--muted);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wx-days{display:flex;gap:5px;flex:none}
+.wx-day{background:var(--card-hi);border-radius:10px;padding:5px 8px;text-align:center;font-size:11.5px;color:var(--muted);white-space:nowrap;line-height:1.35;min-width:58px}
+.wx-day .ic{font-size:16px;display:block;line-height:1.2}
+.wx-day .rain{font-size:10.5px;color:#3b82f6}
+.wx-day b{display:block;color:var(--text);font-weight:600;font-size:11.5px}
+.wx-day .hi{color:var(--text);font-weight:500}
+
+.crypto{gap:10px;justify-content:space-between;width:100%}
+.ticker{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.coin-badge{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
+.btc{background:rgba(247,147,26,.14);color:#e2850f}
+.xrp{background:rgba(35,41,47,.08);color:#23292f;font-size:10px}
+.price{font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.chg{font-size:11.5px;font-variant-numeric:tabular-nums}
+.up{color:var(--up)} .down{color:var(--down)}
+.crypto-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.updated{font-size:10.5px;color:var(--dim);white-space:nowrap}
+
+/* ---------- App bar (single line) ---------- */
+.apps{display:flex;flex-wrap:nowrap;gap:2px;padding:6px 8px;margin-top:12px;justify-content:space-between;
+  overflow-x:auto;scrollbar-width:none}
+.apps::-webkit-scrollbar{display:none}
+.app{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:10px;font-size:13px;font-weight:500;
+  transition:background .15s;white-space:nowrap;flex:none}
+.app:hover{background:var(--card-hi)}
+.app svg{width:17px;height:17px;flex:none}
+.app.dragging{opacity:.35;background:var(--card-hi)}
+.app[draggable]{cursor:pointer}
+.app-sep{width:1px;background:var(--border);margin:6px 2px;flex:none}
+
+/* ---------- Main grid ---------- */
+.grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(360px,1.3fr) minmax(300px,1fr);gap:14px;margin-top:12px}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{padding:16px 18px}
+.card h2{font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.iconbtn{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
+.iconbtn:hover{background:var(--card-hi);color:var(--text)}
+
+/* month calendar */
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-title{font-size:17px;font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .dow{font-size:10.5px;color:var(--dim);font-weight:600;padding:4px 0;text-transform:uppercase;letter-spacing:.8px}
+.cal .d{aspect-ratio:1/1;display:grid;place-items:center;border-radius:10px;font-size:14px;font-variant-numeric:tabular-nums}
+.cal .d.other{color:#c9cfdb}
+.cal .d.wknd{color:var(--muted)}
+.cal .d.today{background:linear-gradient(135deg,var(--accent),#7c5cf6);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(59,108,246,.35)}
+.cal .d:not(.today):not(.other):hover{background:var(--card-hi)}
+
+/* notepad */
+.notes{flex:1;display:flex;flex-direction:column;min-height:260px}
+.notes textarea{flex:1;width:100%;min-height:200px;resize:vertical;background:#fff;border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;color:var(--text);font:14px/1.6 Inter,system-ui,sans-serif;outline:none}
+.notes textarea:focus{border-color:rgba(59,108,246,.5);box-shadow:0 0 0 3px rgba(59,108,246,.12)}
+.notes .meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--dim);margin-top:8px}
+#notes-saved.ok{color:var(--up)} #notes-saved.err{color:var(--down)}
+.field a{color:var(--accent)}
+
+/* agenda */
+.legend{display:flex;gap:12px;font-size:12px;color:var(--muted);font-weight:500;align-items:center}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+.agenda{flex:1;display:flex;flex-direction:column}
+.agenda-frame{flex:1;min-height:640px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--border)}
+.agenda-frame iframe{width:100%;height:100%;min-height:640px;border:0;display:block}
+.empty{display:grid;place-items:center;text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;height:100%;line-height:1.6}
+.empty button{margin-top:12px;background:var(--accent);color:#fff;padding:8px 16px;border-radius:10px;font-weight:600}
+
+/* news */
+.news-list{display:flex;flex-direction:column}
+.story{display:flex;gap:12px;padding:10px 6px;border-bottom:1px solid var(--border);border-radius:10px;transition:background .15s}
+.story:hover{background:var(--card-hi)}
+.story:last-child{border-bottom:0}
+.story img{width:84px;height:58px;object-fit:cover;border-radius:8px;flex:none;background:#e7eaf1}
+.story h3{font-size:13.5px;font-weight:500;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.story .when{font-size:11.5px;color:var(--dim);margin-top:3px}
+.muted{color:var(--muted);font-size:13px}
+
+/* settings modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.35);display:none;place-items:center;z-index:50;padding:16px}
+.modal-bg.open{display:grid}
+.modal{width:min(520px,100%);max-height:calc(100vh - 32px);overflow-y:auto;padding:24px;background:rgba(255,255,255,.97)}
+.modal h3{font-size:18px;margin-bottom:4px}
+.modal p.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.field input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.15);background:#fff;color:var(--text);font:inherit;font-size:14px;outline:none}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,108,246,.12)}
+.field .hint{font-size:11.5px;color:var(--dim);margin-top:5px}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.btn{padding:9px 16px;border-radius:10px;font-weight:600;font-size:14px}
+.btn.pri{background:var(--accent);color:#fff}
+.btn.sec{background:var(--card-hi)}
+.gear{position:fixed;right:18px;bottom:18px;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:var(--muted);z-index:10}
+.gear:hover{color:var(--text)}
+
+/* Narrower screens: app bar goes icon-only so it stays on one line */
+@media (max-width:1560px){ .app{padding:7px 7px;font-size:12.5px;gap:6px} .wx{gap:10px} .wx-day{padding:5px 6px;min-width:52px} }
+
+@media (max-width:1340px){ .app span{display:none} .app{padding:8px 11px} .apps{justify-content:center} }
+@media (max-width:1200px){
+  .grid{grid-template-columns:1fr 1fr}
+  .col.news{grid-column:1 / -1}
+  .wx-days{display:none}
+}
+@media (max-width:900px){
+  .banner{grid-template-columns:1fr}
+  .banner > div + div{border-left:0;border-top:1px solid var(--border)}
+  .grid{grid-template-columns:1fr}
+  .wrap{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== Top banner: 3 columns ===== -->
+  <header class="banner glass">
+    <div class="time-block">
+      <div class="clock" id="clock">--:--</div>
+      <div>
+        <div class="greet" id="greet">Good morning</div>
+        <div class="date" id="date"></div>
+        <div class="fact"><div class="fact-txt" id="fact" title=""></div><button title="Another fact" onclick="nextFact()">↻</button></div>
+      </div>
+    </div>
+    <div class="wx">
+      <div class="wx-now">
+        <div class="wx-icon" id="wx-icon">·</div>
+        <div style="min-width:0">
+          <div class="label" id="wx-place">Weather</div>
+          <div class="wx-temp" id="wx-temp">--°</div>
+          <div class="wx-desc" id="wx-desc">Loading weather…</div>
+        </div>
+      </div>
+      <div class="wx-days" id="wx-days"></div>
+    </div>
+    <div class="crypto">
+      <div class="ticker">
+        <div class="coin-badge btc">₿</div>
+        <div><div class="label">Bitcoin</div><div class="price" id="btc-price">—</div><div class="chg" id="btc-chg">&nbsp;</div></div>
+      </div>
+      <div class="ticker">
+        <div class="coin-badge xrp">XRP</div>
+        <div><div class="label">XRP</div><div class="price" id="xrp-price">—</div><div class="chg" id="xrp-chg">&nbsp;</div></div>
+      </div>
+      <div class="crypto-side">
+        <button class="iconbtn" title="Refresh prices" onclick="loadCrypto()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        <div class="updated" id="crypto-upd"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== App menu bar ===== -->
+  <nav class="apps glass" id="apps"></nav>
+
+  <!-- ===== Main 3 columns ===== -->
+  <main class="grid">
+    <section class="col">
+      <div class="card glass">
+        <div class="cal-head">
+          <button class="iconbtn" onclick="shiftMonth(-1)" title="Previous month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg></button>
+          <div class="cal-title" id="cal-title"></div>
+          <button class="iconbtn" onclick="shiftMonth(1)" title="Next month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+        <div class="cal" id="cal"></div>
+      </div>
+
+      <div class="card glass notes">
+        <h2>Notepad
+          <button class="iconbtn" title="Download notes as .txt" onclick="downloadNotes()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></button>
+        </h2>
+        <textarea id="notes" placeholder="Jot something down… (saves automatically)"></textarea>
+        <div class="meta"><span id="notes-count">0 words</span><span id="notes-saved">Saved</span></div>
+      </div>
+    </section>
+
+    <section class="col">
+      <div class="card glass agenda">
+        <h2>Agenda
+          <div class="legend" id="legend"></div>
+        </h2>
+        <div class="agenda-frame" id="agenda-frame"></div>
+      </div>
+    </section>
+
+    <section class="col news">
+      <div class="card glass">
+        <h2>WPRI 12 · Local News
+          <button class="iconbtn" title="Refresh" onclick="loadNews()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </h2>
+        <div class="news-list" id="news"><div class="muted">Loading headlines…</div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button class="gear glass" title="Settings" onclick="openSettings()">
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+</button>
+
+<!-- ===== Settings ===== -->
+<div class="modal-bg" id="settings">
+  <div class="modal glass">
+    <h3>Dashboard settings</h3>
+    <p class="sub">Saved in this browser only.</p>
+    <div class="field"><label>Your name (for the greeting)</label><input id="s-name" placeholder="Jeff"></div>
+    <div class="field"><label>School Google account (email)</label><input id="s-school" placeholder="you@school.org">
+      <div class="hint">Shown in blue on the agenda. Classroom, Drive, Docs, etc. open in this account.</div></div>
+    <div class="field"><label>Personal Gmail address</label><input id="s-personal" placeholder="you@gmail.com">
+      <div class="hint">Shown in green on the agenda. Gmail, Keep and Photos open in this account.</div></div>
+    <div class="field"><label>Weather town</label><input id="s-town" placeholder="Cranston, RI">
+      <div class="hint">Town name, e.g. "Warwick" or "Providence". Looked up automatically.</div></div>
+    <div class="field"><label>Notes sync: GitHub token</label><input id="s-token" type="password" placeholder="ghp_…" autocomplete="off">
+      <div class="hint">Syncs the notepad between computers through a secret Gist in your GitHub account.
+        <a href="https://github.com/settings/tokens/new?scopes=gist&description=Chrome%20dashboard%20notes" target="_blank" rel="noopener">Create a token</a>
+        with only the <b>gist</b> box checked and paste the same token on each computer. Leave blank to keep notes on this computer only.</div></div>
+    <div class="actions">
+      <button class="btn sec" style="margin-right:auto" onclick="resetAppOrder()" title="Put the app bar back in its original order">Reset app order</button>
+      <button class="btn sec" onclick="closeSettings()">Cancel</button>
+      <button class="btn pri" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- Storage helpers ---------------- */
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('dash.'+k); return v===null? d : JSON.parse(v);}catch(e){return d} },
+  set(k, v){ try{ localStorage.setItem('dash.'+k, JSON.stringify(v)); }catch(e){} }
+};
+const S = Object.assign({name:'Jeff', school:'', personal:'', town:'Cranston', lat:41.7798, lon:-71.4373, place:'Cranston, RI'}, store.get('settings', {}));
+
+/* ---------------- Clock & greeting ---------------- */
+function tick(){
+  const now = new Date();
+  const h = now.getHours(), m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').innerHTML = `${((h+11)%12)+1}:${m}<small>${h>=12?'PM':'AM'}</small>`;
+  document.getElementById('date').textContent = now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const part = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greet').textContent = S.name ? `${part}, ${S.name}` : part;
+}
+tick(); setInterval(tick, 1000);
+
+
+/* ---------------- Fact of the day ---------------- */
+const FACTS = [
+"Octopuses have three hearts and blue blood.",
+"A day on Venus is longer than its year: it spins once every 243 Earth days but orbits the Sun in 225.",
+"The first computer \"bug\" was a real moth, found taped into the Harvard Mark II's logbook in 1947.",
+"Light from the Sun takes about 8 minutes and 20 seconds to reach Earth.",
+"The Apollo Guidance Computer that landed astronauts on the Moon had roughly 4 KB of erasable memory.",
+"Sharks are older than trees: sharks appeared about 450 million years ago, trees about 385 million.",
+"Wombats produce cube-shaped droppings.",
+"The Great Wall of China is not visible to the naked eye from the Moon.",
+"A lightning bolt can reach about 30,000 K, roughly five times hotter than the surface of the Sun.",
+"There are more possible games of chess (about 10^120) than atoms in the observable universe (about 10^80).",
+"The International Space Station circles Earth about every 90 minutes, so its crew sees about 16 sunrises a day.",
+"Water expands by about 9% when it freezes, which is why ice floats and pipes burst.",
+"The word \"robot\" comes from the Czech \"robota\" (forced labor) and first appeared in Karel Čapek's 1920 play R.U.R.",
+"Ada Lovelace published what is considered the first computer program in 1843, for Babbage's Analytical Engine.",
+"The first webcam watched a coffee pot at the University of Cambridge so researchers knew when it was full.",
+"The Moon drifts about 3.8 cm farther from Earth every year.",
+"Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid of Giza.",
+"Teaching at Oxford University began before the Aztec capital Tenochtitlán was founded in 1325.",
+"GPS satellite clocks run about 38 microseconds per day fast because of relativity, and must be corrected.",
+"IBM's first gigabyte-class hard drive (the 3380, 1980) weighed around 550 pounds.",
+"Velcro was invented after George de Mestral studied the burrs stuck to his dog's fur.",
+"Kevlar was invented by chemist Stephanie Kwolek at DuPont in 1965.",
+"Alexander Fleming discovered penicillin in 1928 after mold contaminated one of his bacteria dishes.",
+"Slater Mill in Pawtucket (1793) is often called the birthplace of the American Industrial Revolution.",
+"The Rhode Island Red, a chicken breed developed in Rhode Island, is the state bird.",
+"Saturn is less dense than water, so it would float in a large enough bathtub.",
+"A \"jiffy\" is a real unit: in electronics it's one cycle of AC power, 1/60 of a second in the U.S.",
+"Sound travels about 17 times faster through steel than through air.",
+"The first transistor was built at Bell Labs in December 1947.",
+"Hummingbirds are the only birds that can fly backward.",
+"Koala fingerprints are so similar to human ones that they're hard to tell apart under a microscope.",
+"Sea otters often hold hands while sleeping so they don't drift apart.",
+"The Pacific Ocean at its widest is more than five times the Moon's diameter.",
+"A group of flamingos is called a flamboyance.",
+"Linus Torvalds released the first Linux kernel in 1991, calling it \"just a hobby.\"",
+"The Arduino board was created in 2005 at a design institute in Ivrea, Italy.",
+"NASA's Ingenuity helicopter made the first powered, controlled flight on another planet, on Mars in 2021.",
+"Old windows that are thicker at the bottom aren't flowing glass; that's how they were made and installed.",
+"Diamond and graphite are both made of pure carbon; only the atomic arrangement differs.",
+"The Golden Gate Bridge is painted a color called \"International Orange.\"",
+"A day on Mars, called a sol, lasts about 24 hours and 39 minutes.",
+"Leonardo da Vinci sketched a mechanical knight, an early robot design, around 1495.",
+"Ray Tomlinson sent the first network email in 1971 and chose the @ symbol to separate user from computer.",
+"Falling raindrops aren't tear-shaped: small ones are spheres and larger ones flatten like hamburger buns.",
+"The Sun converts about 4 million metric tons of mass into energy every second.",
+"Earth's inner core is roughly as hot as the surface of the Sun, about 5,200 °C.",
+"Bananas are botanically berries, but strawberries are not.",
+"The Eiffel Tower can grow about 15 cm taller in summer as its iron expands in the heat.",
+"Honey found in ancient Egyptian tombs has been found still edible after thousands of years.",
+"A neutron star is so dense that a teaspoon of it would weigh billions of tons on Earth.",
+"The QWERTY keyboard layout dates to Christopher Sholes's typewriters of the 1870s.",
+"Hedy Lamarr, the film star, co-invented a frequency-hopping technique that underlies modern wireless tech.",
+"The Wright brothers' first powered flight in 1903 lasted 12 seconds and covered 120 feet.",
+"Grace Hopper's team built one of the first compilers, and she helped create the COBOL language.",
+"The Hoover Dam contains enough concrete to pave a two-lane highway from San Francisco to New York.",
+"Mount Everest's summit is made of marine limestone that formed on an ancient sea floor.",
+"Your eye's lens focuses images upside down on the retina; your brain flips them.",
+"Tardigrades can survive the vacuum of space in a dried-out, dormant state.",
+"The first 3D printer was patented by Chuck Hull in 1986, using a process called stereolithography.",
+"A single strand of spider silk is, by weight, stronger than steel.",
+"Rhode Island's state motto is a single word: \"Hope.\""
+];
+function dayIndex(){ const n=new Date(); return Math.floor((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate()) - Date.UTC(2026,0,1))/864e5); }
+let factOffset = 0;
+function showFact(){
+  const i = (((dayIndex()*7 + factOffset) % FACTS.length) + FACTS.length) % FACTS.length;
+  const el = document.getElementById('fact');
+  el.innerHTML = `<b>${factOffset? 'Fact' : 'Fact of the day'}:</b> ${FACTS[i]}`;
+  el.title = FACTS[i];
+}
+function nextFact(){ factOffset++; showFact(); }
+showFact();
+let factDay = dayIndex();
+setInterval(()=>{ if(dayIndex()!==factDay){ factDay=dayIndex(); factOffset=0; showFact(); } }, 60000);
+
+/* ---------------- App bar ---------------- */
+const I = {
+  mail:'<path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="m22 6-10 7L2 6"/>',
+  smail:'<path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="m22 6-10 7L2 6"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  class:'<path d="M3 5h18v12H3z"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10" r="2.5"/>',
+  drive:'<path d="M8 3h8l6 11-4 7H6l-4-7z"/><path d="M8 3l6 11H2M16 3l-6 11h12"/>',
+  doc:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8M8 9h2"/>',
+  sheet:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>',
+  slide:'<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 22h8M12 18v4"/>',
+  form:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 7h8M8 12h8M8 17h5"/>',
+  meet:'<rect x="2" y="6" width="14" height="12" rx="2"/><path d="m22 8-6 4 6 4z"/>',
+  yt:'<rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/>',
+  keep:'<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+  maps:'<path d="M12 21s-7-6.1-7-11a7 7 0 1 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+  photos:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+  gem:'<path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>'
+};
+const COLORS = {mail:'#ea4335',smail:'#3b6cf6',cal:'#4285f4',class:'#1e8e3e',drive:'#e8a400',doc:'#4285f4',sheet:'#1e8e3e',slide:'#e8a400',form:'#8e44f0',meet:'#00a344',yt:'#ff0033',keep:'#e8a400',maps:'#1e8e3e',photos:'#ea4335',gem:'#5b7cf6'};
+const au = email => email ? 'authuser='+encodeURIComponent(email) : '';
+const withAu = (url, email) => email ? url + (url.includes('?')?'&':'?') + au(email) : url;
+function renderApps(){
+  const sch = S.school, per = S.personal;
+  const list = [
+    {n:'Gmail', i:'mail', u: withAu('https://mail.google.com/mail/', per)},
+    {n:'School Mail', i:'smail', u: withAu('https://mail.google.com/mail/', sch), hide: !sch},
+    {n:'Calendar', i:'cal', u: withAu('https://calendar.google.com/calendar/', sch)},
+    {n:'Classroom', i:'class', u: withAu('https://classroom.google.com/', sch)},
+    {n:'Drive', i:'drive', u: withAu('https://drive.google.com/', sch)},
+    {n:'Docs', i:'doc', u: withAu('https://docs.google.com/document/', sch)},
+    {n:'Sheets', i:'sheet', u: withAu('https://docs.google.com/spreadsheets/', sch)},
+    {n:'Slides', i:'slide', u: withAu('https://docs.google.com/presentation/', sch)},
+    {n:'Forms', i:'form', u: withAu('https://docs.google.com/forms/', sch)},
+    {n:'Meet', i:'meet', u: withAu('https://meet.google.com/', sch)},
+    {n:'Gemini', i:'gem', u: withAu('https://gemini.google.com/', sch)},
+    {n:'Keep', i:'keep', u: withAu('https://keep.google.com/', per)},
+    {n:'Photos', i:'photos', u: withAu('https://photos.google.com/', per)},
+    {n:'YouTube', i:'yt', u:'https://www.youtube.com/'},
+    {n:'Maps', i:'maps', u:'https://maps.google.com/'}
+  ];
+  // apply saved drag-and-drop order (new/unknown apps go at the end)
+  const order = store.get('appOrder', []);
+  const rank = a => { const k = order.indexOf(a.n); return k<0 ? 1000 + list.indexOf(a) : k; };
+  const shown = list.filter(a=>!a.hide).sort((a,b)=>rank(a)-rank(b));
+  document.getElementById('apps').innerHTML = shown.map(a=>
+    `<a class="app" draggable="true" data-name="${a.n}" href="${a.u}" target="_blank" rel="noopener" title="${a.n} — drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="${COLORS[a.i]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${I[a.i]}</svg><span>${a.n}</span></a>`
+  ).join('');
+}
+
+/* Drag-and-drop reordering of the app bar */
+(function(){
+  const bar = document.getElementById('apps');
+  let dragEl = null;
+  bar.addEventListener('dragstart', e=>{
+    dragEl = e.target.closest('.app'); if(!dragEl) return;
+    dragEl.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragEl.dataset.name);
+  });
+  bar.addEventListener('dragover', e=>{
+    if(!dragEl) return;
+    e.preventDefault();
+    const over = e.target.closest('.app');
+    if(!over || over===dragEl) return;
+    const r = over.getBoundingClientRect();
+    const after = e.clientX > r.left + r.width/2;
+    bar.insertBefore(dragEl, after ? over.nextSibling : over);
+  });
+  bar.addEventListener('drop', e=>{ if(dragEl) e.preventDefault(); });
+  bar.addEventListener('dragend', ()=>{
+    if(!dragEl) return;
+    dragEl.classList.remove('dragging'); dragEl = null;
+    // keep hidden apps (e.g. School Mail before it's set up) in the saved order too
+    const visible = [...bar.querySelectorAll('.app')].map(a=>a.dataset.name);
+    const prev = store.get('appOrder', []).filter(n=>!visible.includes(n));
+    store.set('appOrder', [...visible, ...prev]);
+  });
+})();
+function resetAppOrder(){ store.set('appOrder', []); renderApps(); }
+renderApps();
+
+/* ---------------- Month calendar ---------------- */
+let view = new Date(); view.setDate(1);
+function shiftMonth(d){ view.setMonth(view.getMonth()+d); renderCal(); }
+function renderCal(){
+  const y=view.getFullYear(), mo=view.getMonth(), today=new Date();
+  document.getElementById('cal-title').textContent = view.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+  const first = new Date(y,mo,1).getDay(), days = new Date(y,mo+1,0).getDate(), prevDays = new Date(y,mo,0).getDate();
+  let h = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="dow">${d}</div>`).join('');
+  const cells = Math.ceil((first+days)/7)*7;
+  for(let i=0;i<cells;i++){
+    const n = i-first+1, col=i%7;
+    if(n<1) h+=`<div class="d other">${prevDays+n}</div>`;
+    else if(n>days) h+=`<div class="d other">${n-days}</div>`;
+    else{
+      const isT = n===today.getDate() && mo===today.getMonth() && y===today.getFullYear();
+      h+=`<div class="d${isT?' today':''}${(col===0||col===6)&&!isT?' wknd':''}">${n}</div>`;
+    }
+  }
+  document.getElementById('cal').innerHTML = h;
+}
+renderCal();
+setInterval(()=>{ const t=new Date(); if(t.getHours()===0&&t.getMinutes()===0){ view=new Date(); view.setDate(1); renderCal(); } }, 60000);
+
+/* ---------------- Notepad (saved locally + synced via a secret GitHub Gist) ---------------- */
+const ta = document.getElementById('notes');
+const statusEl = document.getElementById('notes-saved');
+const GIST_DESC = 'Chrome dashboard notes', GIST_FILE = 'dashboard-notes.txt';
+ta.value = store.get('notes','');
+let dirty = store.get('notesDirty', !!ta.value);       // local edits not yet pushed
+let remoteAt = store.get('notesRemoteAt', null);       // gist updated_at we last saw/wrote
+let localT, pushT, syncing = false;
+function setStatus(t, cls=''){ statusEl.textContent=t; statusEl.className=cls; }
+function hhmm(){ return new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}); }
+function countNotes(){ const w = ta.value.trim() ? ta.value.trim().split(/\s+/).length : 0; document.getElementById('notes-count').textContent = `${w} word${w===1?'':'s'}`; }
+function saveLocal(){ store.set('notes', ta.value); store.set('notesDirty', dirty); store.set('notesRemoteAt', remoteAt); }
+function setText(t){ // replace textarea content, keeping the cursor roughly in place
+  if(t===ta.value) return;
+  const pos = ta.selectionStart; ta.value = t; try{ ta.setSelectionRange(pos,pos); }catch(e){}
+  countNotes();
+}
+ta.addEventListener('input',()=>{
+  dirty = true; countNotes(); setStatus('Saving…');
+  clearTimeout(localT); localT=setTimeout(()=>{ saveLocal(); if(!S.token) setStatus('Saved on this computer'); }, 300);
+  if(S.token){ clearTimeout(pushT); pushT=setTimeout(pushNotes, 1500); }
+});
+countNotes();
+
+async function gh(path, opts={}){
+  const r = await fetch('https://api.github.com'+path, Object.assign({cache:'no-store'}, opts, {
+    headers: Object.assign({'Authorization':'Bearer '+S.token, 'Accept':'application/vnd.github+json'}, opts.headers||{})}));
+  if(!r.ok) throw new Error(r.status===401 ? 'Token rejected' : 'GitHub error '+r.status);
+  return r.json();
+}
+const enc = t => t.length ? t : ' ';                    // Gist files can't be empty
+const dec = t => (t===' ' ? '' : (t||''));
+async function findOrCreateGist(){
+  if(S.gistId) return S.gistId;
+  for(let page=1; page<=5; page++){
+    const list = await gh(`/gists?per_page=100&page=${page}`);
+    const hit = list.find(g=>g.description===GIST_DESC && g.files[GIST_FILE]);
+    if(hit){ S.gistId = hit.id; break; }
+    if(list.length<100) break;
+  }
+  if(!S.gistId){
+    const g = await gh('/gists',{method:'POST', body: JSON.stringify({description:GIST_DESC, public:false, files:{[GIST_FILE]:{content:enc(ta.value)}}})});
+    S.gistId = g.id; remoteAt = g.updated_at; dirty = false; saveLocal();
+  }
+  store.set('settings', S);
+  return S.gistId;
+}
+async function pullNotes(){
+  if(!S.token || syncing) return;
+  syncing = true;
+  try{
+    const id = await findOrCreateGist();
+    const g = await gh('/gists/'+id);
+    const remote = dec(g.files[GIST_FILE]?.content);
+    if(g.updated_at !== remoteAt){
+      if(!dirty || remote === ta.value){
+        setText(remote);
+      }else if(remote.trim() && !ta.value.includes(remote)){
+        // Both computers changed the notes: keep both so nothing is lost
+        setText(ta.value + `\n\n—— From your other computer (${new Date(g.updated_at).toLocaleString()}) ——\n` + remote);
+        dirty = true;
+      }
+      remoteAt = g.updated_at; saveLocal();
+    }
+    syncing = false;
+    if(dirty) await pushNotes(); else setStatus('Synced '+hhmm(), 'ok');
+  }catch(e){ syncing = false; setStatus(e.message+' · saved locally', 'err'); }
+}
+async function pushNotes(){
+  if(!S.token) return;
+  if(syncing){ clearTimeout(pushT); pushT=setTimeout(pushNotes, 1000); return; }
+  syncing = true; setStatus('Syncing…');
+  const sent = ta.value;
+  try{
+    const id = await findOrCreateGist();
+    const g = await gh('/gists/'+id,{method:'PATCH', body: JSON.stringify({files:{[GIST_FILE]:{content:enc(sent)}}})});
+    remoteAt = g.updated_at;
+    if(ta.value === sent) dirty = false;   // more typing may have happened meanwhile
+    saveLocal(); setStatus('Synced '+hhmm(), 'ok');
+  }catch(e){ setStatus(e.message+' · saved locally', 'err'); }
+  syncing = false;
+}
+// Check for changes from the other computer when this tab comes back into view, and every minute
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') pullNotes(); });
+window.addEventListener('focus', ()=>pullNotes());
+setInterval(()=>{ if(document.visibilityState==='visible' && !dirty) pullNotes(); }, 60*1000);
+// Last-chance push when the tab is closed
+window.addEventListener('pagehide', ()=>{
+  if(!S.token || !S.gistId || !dirty) return;
+  saveLocal();
+  try{ fetch('https://api.github.com/gists/'+S.gistId,{method:'PATCH',keepalive:true,
+    headers:{'Authorization':'Bearer '+S.token,'Accept':'application/vnd.github+json'},
+    body:JSON.stringify({files:{[GIST_FILE]:{content:enc(ta.value)}}})}); }catch(e){}
+});
+if(S.token) pullNotes(); else setStatus(ta.value ? 'Saved on this computer' : 'Saved');
+function downloadNotes(){
+  const b = new Blob([ta.value],{type:'text/plain'}); const a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=`notes-${new Date().toISOString().slice(0,10)}.txt`; a.click();
+}
+
+/* ---------------- Agenda: School + Personal combined in one view ---------------- */
+function renderAgenda(){
+  const f = document.getElementById('agenda-frame');
+  const cals = [];
+  if(S.school)   cals.push({email:S.school,   color:'#3b6cf6', name:'School'});
+  if(S.personal) cals.push({email:S.personal, color:'#10a37f', name:'Personal'});
+  document.getElementById('legend').innerHTML = cals.map(c=>`<span><i style="background:${c.color}"></i>${c.name}</span>`).join('');
+  if(!cals.length){
+    f.innerHTML = `<div class="empty"><div>Add your school and personal Google accounts<br>in Settings to show your agenda here.<br><button onclick="openSettings()">Open settings</button></div></div>`;
+    return;
+  }
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+  const srcs = cals.map(c=>`src=${encodeURIComponent(c.email)}&color=${encodeURIComponent(c.color)}`).join('&');
+  // Signed in as the school account (personal calendar shared to it) — falls back to personal if no school account.
+  const viewer = S.school || S.personal;
+  const url = `https://calendar.google.com/calendar/embed?${srcs}&mode=AGENDA&ctz=${encodeURIComponent(tz)}&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&showNav=1&showDate=1&bgcolor=%23ffffff&${au(viewer)}`;
+  f.innerHTML = `<iframe src="${url}" loading="lazy" title="Agenda"></iframe>`;
+}
+renderAgenda();
+
+/* ---------------- Weather (Open-Meteo, no key) ---------------- */
+const WX = c => c===0?['☀️','Clear']:c<=2?['🌤️','Partly cloudy']:c===3?['☁️','Overcast']:c<=48?['🌫️','Fog']:c<=57?['🌦️','Drizzle']:
+  c<=67?['🌧️','Rain']:c<=77?['🌨️','Snow']:c<=82?['🌧️','Showers']:c<=86?['🌨️','Snow showers']:['⛈️','Thunderstorms'];
+async function loadWeather(){
+  try{
+    const u = `https://api.open-meteo.com/v1/forecast?latitude=${S.lat}&longitude=${S.lon}&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=4`;
+    const d = await (await fetch(u)).json();
+    const [ic,desc] = WX(d.current.weather_code);
+    document.getElementById('wx-icon').textContent = ic;
+    document.getElementById('wx-place').textContent = S.place;
+    document.getElementById('wx-temp').textContent = Math.round(d.current.temperature_2m)+'°F';
+    document.getElementById('wx-desc').textContent = `${desc} · H ${Math.round(d.daily.temperature_2m_max[0])}° L ${Math.round(d.daily.temperature_2m_min[0])}°`;
+    let h='';
+    for(let i=1;i<4;i++){
+      const dt = new Date(d.daily.time[i]+'T12:00');
+      h+=`<div class="wx-day" title="${WX(d.daily.weather_code[i])[1]}"><b>${dt.toLocaleDateString(undefined,{weekday:'short'})}</b><span class="ic">${WX(d.daily.weather_code[i])[0]}</span><span class="hi">${Math.round(d.daily.temperature_2m_max[i])}°</span>/${Math.round(d.daily.temperature_2m_min[i])}°<br><span class="rain">${d.daily.precipitation_probability_max[i]??0}% rain</span></div>`;
+    }
+    document.getElementById('wx-days').innerHTML = h;
+  }catch(e){ document.getElementById('wx-desc').textContent='Weather unavailable'; }
+}
+loadWeather(); setInterval(loadWeather, 30*60*1000);
+
+/* ---------------- Crypto (CoinGecko, Coinbase fallback) ---------------- */
+const usd = v => v>=100 ? v.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0})
+                        : v.toLocaleString(undefined,{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:4});
+function showCoin(id, price, chg){
+  document.getElementById(id+'-price').textContent = usd(price);
+  const el = document.getElementById(id+'-chg');
+  if(chg==null){ el.textContent=''; return; }
+  el.className = 'chg ' + (chg>=0?'up':'down');
+  el.textContent = `${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(2)}% 24h`;
+}
+async function loadCrypto(){
+  try{
+    const d = await (await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ripple&vs_currencies=usd&include_24hr_change=true')).json();
+    showCoin('btc', d.bitcoin.usd, d.bitcoin.usd_24h_change);
+    showCoin('xrp', d.ripple.usd, d.ripple.usd_24h_change);
+  }catch(e){
+    try{
+      const [b,x] = await Promise.all(['BTC','XRP'].map(s=>fetch(`https://api.coinbase.com/v2/prices/${s}-USD/spot`).then(r=>r.json())));
+      showCoin('btc', +b.data.amount, null); showCoin('xrp', +x.data.amount, null);
+    }catch(e2){ document.getElementById('crypto-upd').textContent='Unavailable'; return; }
+  }
+  document.getElementById('crypto-upd').textContent = new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+}
+loadCrypto(); setInterval(loadCrypto, 60*1000);
+
+/* ---------------- WPRI news (RSS via CORS-friendly readers) ---------------- */
+const FEED = 'https://www.wpri.com/feed/';
+function ago(d){ const s=(Date.now()-d)/1000; if(s<3600) return Math.max(1,Math.round(s/60))+' min ago'; if(s<86400) return Math.round(s/3600)+' hr ago'; return Math.round(s/86400)+' d ago'; }
+function esc(s){ const t=document.createElement('div'); t.textContent=s; return t.innerHTML; }
+async function fetchViaRss2Json(){
+  const d = await (await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(FEED))).json();
+  if(d.status!=='ok') throw 0;
+  return d.items.map(i=>({title:i.title, link:i.link, date:new Date(i.pubDate.replace(' ','T')+'Z'), img: i.thumbnail || (i.enclosure&&i.enclosure.link) || ''}));
+}
+async function fetchViaProxy(){
+  const r = await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(FEED));
+  const x = new DOMParser().parseFromString(await r.text(),'text/xml');
+  return [...x.querySelectorAll('item')].map(i=>{
+    const media = i.getElementsByTagName('media:content')[0] || i.getElementsByTagName('media:thumbnail')[0];
+    return {title:i.querySelector('title')?.textContent, link:i.querySelector('link')?.textContent, date:new Date(i.querySelector('pubDate')?.textContent), img: media?media.getAttribute('url'):''};
+  });
+}
+async function loadNews(){
+  const box = document.getElementById('news');
+  let items;
+  try{ items = await fetchViaRss2Json(); }catch(e){ try{ items = await fetchViaProxy(); }catch(e2){} }
+  if(!items||!items.length){ box.innerHTML = `<div class="muted">Couldn't load headlines right now. <a href="https://www.wpri.com/news/local-news/" style="color:var(--accent)">Open WPRI →</a></div>`; return; }
+  box.innerHTML = items.slice(0,10).map(i=>`
+    <a class="story" href="${i.link}">
+      ${i.img?`<img src="${i.img}" alt="" loading="lazy" onerror="this.remove()">`:''}
+      <div><h3>${esc(i.title||'')}</h3><div class="when">${isNaN(i.date)?'':ago(i.date)}</div></div>
+    </a>`).join('') + `<a class="story" href="https://www.wpri.com/news/local-news/" style="justify-content:center;color:var(--accent);font-size:13px">More from WPRI →</a>`;
+}
+loadNews(); setInterval(loadNews, 15*60*1000);
+
+/* ---------------- Settings ---------------- */
+function openSettings(){
+  document.getElementById('s-name').value = S.name||'';
+  document.getElementById('s-school').value = S.school||'';
+  document.getElementById('s-personal').value = S.personal||'';
+  document.getElementById('s-town').value = S.town||'';
+  document.getElementById('s-token').value = S.token||'';
+  document.getElementById('settings').classList.add('open');
+}
+function closeSettings(){ document.getElementById('settings').classList.remove('open'); }
+async function saveSettings(){
+  S.name = document.getElementById('s-name').value.trim();
+  S.school = document.getElementById('s-school').value.trim();
+  S.personal = document.getElementById('s-personal').value.trim();
+  const town = document.getElementById('s-town').value.trim();
+  if(town && town!==S.town){
+    try{
+      const q = town.replace(/,\s*(RI|Rhode Island)$/i,'');
+      const g = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=10&country=US&name='+encodeURIComponent(q))).json();
+      const hit = (g.results||[]).find(r=>r.admin1==='Rhode Island') || (g.results||[])[0];
+      if(hit){ S.town=town; S.lat=hit.latitude; S.lon=hit.longitude; S.place=`${hit.name}, ${hit.admin1==='Rhode Island'?'RI':hit.admin1}`; }
+    }catch(e){}
+  }
+  const token = document.getElementById('s-token').value.trim();
+  if(token !== (S.token||'')){ S.token = token; S.gistId = ''; remoteAt = null; dirty = !!ta.value; saveLocal(); }
+  store.set('settings', S);
+  closeSettings(); renderApps(); renderAgenda(); loadWeather(); tick();
+  if(S.token) pullNotes(); else setStatus('Saved on this computer');
+}
+document.getElementById('settings').addEventListener('click', e=>{ if(e.target.id==='settings') closeSettings(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeSettings(); });
+if(!store.get('settings', null)) setTimeout(openSettings, 600);
+</script>
+</body>
+</html>
