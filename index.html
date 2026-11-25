@@ -93,11 +93,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .iconbtn:hover{background:var(--card-hi);color:var(--text)}
 
 /* month calendar */
-.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.cal-title{font-size:17px;font-weight:600}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-.cal .dow{font-size:10.5px;color:var(--dim);font-weight:600;padding:4px 0;text-transform:uppercase;letter-spacing:.8px}
-.cal .d{aspect-ratio:1/1;display:grid;place-items:center;border-radius:10px;font-size:14px;font-variant-numeric:tabular-nums}
+.cal-card{padding:12px 16px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.cal-head .iconbtn{width:26px;height:26px}
+.cal-title{font-size:15px;font-weight:600}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:2px 4px;text-align:center}
+.cal .dow{font-size:10px;color:var(--dim);font-weight:600;padding:2px 0;text-transform:uppercase;letter-spacing:.8px}
+.cal .d{height:33px;display:grid;place-items:center;border-radius:8px;font-size:13px;font-variant-numeric:tabular-nums}
 .cal .d.other{color:#c9cfdb}
 .cal .d.wknd{color:var(--muted)}
 .cal .d.today{background:linear-gradient(135deg,var(--accent),#7c5cf6);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(59,108,246,.35)}
@@ -116,6 +118,22 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .legend{display:flex;gap:12px;font-size:12px;color:var(--muted);font-weight:500;align-items:center}
 .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
 .agenda{flex:1;display:flex;flex-direction:column}
+.today-card{padding:12px 16px}
+.today-card h2{margin-bottom:6px;font-size:14px}
+.today-card h2 small{font-weight:500;color:var(--muted);font-size:12.5px;margin-left:6px}
+.today-list{height:96px;overflow-y:auto;margin:0 -6px;padding:0 6px;scrollbar-width:thin}
+.ev{display:flex;align-items:baseline;gap:8px;padding:4px 6px;border-radius:8px;font-size:13px;line-height:1.35}
+.ev .dot{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-1px)}
+.ev .t{color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:62px;font-size:12px}
+.ev .ttl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.ev .loc{color:var(--dim);font-weight:400;margin-left:4px}
+.ev.past{opacity:.45}
+.ev.now{background:rgba(59,108,246,.08)}
+.ev.now .t{color:var(--accent);font-weight:600}
+.today-msg{font-size:12.5px;color:var(--muted);padding:6px 0;line-height:1.5}
+.today-frame{height:80px;border-radius:10px;overflow:hidden;background:#fff;border:1px solid var(--border)}
+.today-frame iframe{width:100%;height:100%;border:0;display:block}
+.today-frame .empty{padding:10px;font-size:12.5px}
 .agenda-frame{flex:1;min-height:640px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--border)}
 .agenda-frame iframe{width:100%;height:100%;min-height:640px;border:0;display:block}
 .empty{display:grid;place-items:center;text-align:center;color:var(--muted);font-size:14px;padding:40px 20px;height:100%;line-height:1.6}
@@ -213,7 +231,14 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   <!-- ===== Main 3 columns ===== -->
   <main class="grid">
     <section class="col">
-      <div class="card glass">
+      <div class="card glass today-card">
+        <h2><span>Today<small id="today-date"></small></span>
+          <a class="iconbtn" href="https://calendar.google.com/calendar/r/day" target="_blank" rel="noopener" title="Open today in Google Calendar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
+        </h2>
+        <div class="today-frame" id="today-frame"></div>
+      </div>
+      <div class="card glass cal-card">
         <div class="cal-head">
           <button class="iconbtn" onclick="shiftMonth(-1)" title="Previous month">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg></button>
@@ -271,6 +296,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
       <div class="hint">Shown in green on the agenda. Gmail, Keep and Photos open in this account.</div></div>
     <div class="field"><label>Weather town</label><input id="s-town" placeholder="Cranston, RI">
       <div class="hint">Town name, e.g. "Warwick" or "Providence". Looked up automatically.</div></div>
+    <div class="field"><label>Today list: Apps Script web app URL</label><input id="s-today" placeholder="https://script.google.com/macros/s/…/exec">
+      <div class="hint">Shows today's events as a clean list. Leave blank to use the basic calendar view.</div></div>
     <div class="field"><label>Notes sync: GitHub token</label><input id="s-token" type="password" placeholder="ghp_…" autocomplete="off">
       <div class="hint">Syncs the notepad between computers through a secret Gist in your GitHub account.
         <a href="https://github.com/settings/tokens/new?scopes=gist&description=Chrome%20dashboard%20notes" target="_blank" rel="noopener">Create a token</a>
@@ -585,24 +612,78 @@ function downloadNotes(){
 }
 
 /* ---------------- Agenda: School + Personal combined in one view ---------------- */
-function renderAgenda(){
-  const f = document.getElementById('agenda-frame');
+function agendaCals(){
   const cals = [];
   if(S.school)   cals.push({email:S.school,   color:'#3b6cf6', name:'School'});
   if(S.personal) cals.push({email:S.personal, color:'#10a37f', name:'Personal'});
+  return cals;
+}
+function calEmbedUrl(cals, extra){
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+  const srcs = cals.map(c=>`src=${encodeURIComponent(c.email)}&color=${encodeURIComponent(c.color)}`).join('&');
+  // Opens as whichever Google account Chrome is signed into first (the school account, with personal shared to it).
+  return `https://calendar.google.com/calendar/embed?${srcs}&mode=AGENDA&ctz=${encodeURIComponent(tz)}&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&bgcolor=%23ffffff&${au(S.school || S.personal)}${extra}`;
+}
+function renderAgenda(){
+  const f = document.getElementById('agenda-frame');
+  const cals = agendaCals();
   document.getElementById('legend').innerHTML = cals.map(c=>`<span><i style="background:${c.color}"></i>${c.name}</span>`).join('');
   if(!cals.length){
     f.innerHTML = `<div class="empty"><div>Add your school and personal Google accounts<br>in Settings to show your agenda here.<br><button onclick="openSettings()">Open settings</button></div></div>`;
-    return;
+  }else{
+    f.innerHTML = `<iframe src="${calEmbedUrl(cals,'&showNav=1&showDate=1')}" loading="lazy" title="Agenda"></iframe>`;
   }
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
-  const srcs = cals.map(c=>`src=${encodeURIComponent(c.email)}&color=${encodeURIComponent(c.color)}`).join('&');
-  // Signed in as the school account (personal calendar shared to it) — falls back to personal if no school account.
-  const viewer = S.school || S.personal;
-  const url = `https://calendar.google.com/calendar/embed?${srcs}&mode=AGENDA&ctz=${encodeURIComponent(tz)}&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&showNav=1&showDate=1&bgcolor=%23ffffff&${au(viewer)}`;
-  f.innerHTML = `<iframe src="${url}" loading="lazy" title="Agenda"></iframe>`;
+  renderToday();
+}
+/* Today: same calendars, limited to today's date */
+function ymd(d){ return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
+let todayKey = '';
+function fmtTime(d){ return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}).replace(':00','').replace(' ',''); }
+async function loadTodayList(){
+  const f = document.getElementById('today-frame');
+  try{
+    const r = await fetch(S.todayUrl, {cache:'no-store'});
+    const d = await r.json();
+    if(!d.events) throw 0;
+    const now = Date.now();
+    if(!d.events.length){ f.innerHTML = `<div class="today-msg">Nothing on your calendar today.</div>`; return; }
+    f.innerHTML = d.events.map(e=>{
+      const st = new Date(e.start), en = new Date(e.end);
+      const cls = e.allDay ? '' : (en <= now ? ' past' : (st <= now ? ' now' : ''));
+      const when = e.allDay ? 'All day' : (cls===' now' ? 'Now' : fmtTime(st));
+      const tip = e.allDay ? 'All day' : `${fmtTime(st)} – ${fmtTime(en)}`;
+      return `<div class="ev${cls}" title="${esc(e.title)} · ${tip}${e.location?' · '+esc(e.location):''} · ${esc(e.calendar)}">
+        <span class="dot" style="background:${esc(e.color||'#3b6cf6')}"></span><span class="t">${when}</span>
+        <span class="ttl">${esc(e.title)}${e.location?`<span class="loc">· ${esc(e.location)}</span>`:''}</span></div>`;
+    }).join('');
+    const cur = f.querySelector('.ev.now') || f.querySelector('.ev:not(.past)');
+    // only scroll if the current/next event would otherwise be out of view (keeps all-day items visible when possible)
+    if(cur){ const top = cur.offsetTop - f.offsetTop; if(top + cur.offsetHeight > f.clientHeight) f.scrollTop = top - 4; }
+  }catch(e){
+    f.innerHTML = `<div class="today-msg">Couldn't load today's events. Check the Apps Script URL in Settings, and that it's deployed with access set to "Anyone".</div>`;
+  }
+}
+function renderToday(){
+  const f = document.getElementById('today-frame');
+  const now = new Date(), tmrw = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+  todayKey = ymd(now);
+  document.getElementById('today-date').textContent = now.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+  if(S.todayUrl){
+    f.className = 'today-list';
+    if(!f.querySelector('.ev,.today-msg')) f.innerHTML = `<div class="today-msg">Loading…</div>`;
+    loadTodayList(); return;
+  }
+  f.className = 'today-frame';
+  const cals = agendaCals();
+  if(!cals.length){ f.innerHTML = `<div class="empty">Add your Google accounts in Settings.</div>`; return; }
+  f.innerHTML = `<iframe src="${calEmbedUrl(cals, `&showNav=0&showDate=0&dates=${ymd(now)}%2F${ymd(tmrw)}`)}" title="Today's events"></iframe>`;
 }
 renderAgenda();
+// Refresh Today every 15 minutes so new events appear, and switch to the new day after midnight
+setInterval(()=>{ if(ymd(new Date())!==todayKey || document.visibilityState==='visible') renderToday(); }, 15*60*1000);
+setInterval(()=>{ if(ymd(new Date())!==todayKey) renderToday(); }, 60*1000);
+setInterval(()=>{ if(S.todayUrl && document.visibilityState==='visible') loadTodayList(); }, 5*60*1000);
+document.addEventListener('visibilitychange', ()=>{ if(S.todayUrl && document.visibilityState==='visible') loadTodayList(); });
 
 /* ---------------- Weather (Open-Meteo, no key) ---------------- */
 const WX = c => c===0?['☀️','Clear']:c<=2?['🌤️','Partly cloudy']:c===3?['☁️','Overcast']:c<=48?['🌫️','Fog']:c<=57?['🌦️','Drizzle']:
@@ -654,7 +735,7 @@ loadCrypto(); setInterval(loadCrypto, 60*1000);
 /* ---------------- WPRI news (RSS via CORS-friendly readers) ---------------- */
 const FEED = 'https://www.wpri.com/feed/';
 function ago(d){ const s=(Date.now()-d)/1000; if(s<3600) return Math.max(1,Math.round(s/60))+' min ago'; if(s<86400) return Math.round(s/3600)+' hr ago'; return Math.round(s/86400)+' d ago'; }
-function esc(s){ const t=document.createElement('div'); t.textContent=s; return t.innerHTML; }
+function esc(s){ const t=document.createElement('div'); t.textContent=s==null?'':String(s); return t.innerHTML.replace(/"/g,'&quot;'); }
 async function fetchViaRss2Json(){
   const d = await (await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(FEED))).json();
   if(d.status!=='ok') throw 0;
@@ -688,6 +769,7 @@ function openSettings(){
   document.getElementById('s-personal').value = S.personal||'';
   document.getElementById('s-town').value = S.town||'';
   document.getElementById('s-token').value = S.token||'';
+  document.getElementById('s-today').value = S.todayUrl||'';
   document.getElementById('settings').classList.add('open');
 }
 function closeSettings(){ document.getElementById('settings').classList.remove('open'); }
@@ -704,6 +786,7 @@ async function saveSettings(){
       if(hit){ S.town=town; S.lat=hit.latitude; S.lon=hit.longitude; S.place=`${hit.name}, ${hit.admin1==='Rhode Island'?'RI':hit.admin1}`; }
     }catch(e){}
   }
+  S.todayUrl = document.getElementById('s-today').value.trim();
   const token = document.getElementById('s-token').value.trim();
   if(token !== (S.token||'')){ S.token = token; S.gistId = ''; remoteAt = null; dirty = !!ta.value; saveLocal(); }
   store.set('settings', S);
